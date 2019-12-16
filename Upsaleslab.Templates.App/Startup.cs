@@ -52,6 +52,7 @@ namespace Upsaleslab.Templates.App
             settings.SslSettings = new SslSettings { EnabledSslProtocols = SslProtocols.Tls12 };
             services.AddScoped<IMongoClient>(x => new MongoClient(settings));
 
+            services.AddScoped<IEventService, EventService>();
             services.AddScoped<ICategoriesService, CategoriesService>();
             services.AddScoped<ITemplateService, TemplateService>();
 
@@ -64,6 +65,8 @@ namespace Upsaleslab.Templates.App
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseAuthentication();
 
             app.UseHealthChecks("/health");
 

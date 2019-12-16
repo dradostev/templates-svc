@@ -12,7 +12,7 @@ namespace Upsaleslab.Templates.App.Events
 
         public string Category { get; set; }
 
-        public (int, int) AspectRatio { get; set; }
+        public string AspectRatio { get; set; }
 
         public List<Field> Payload { get; set; }
     }

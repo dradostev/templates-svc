@@ -15,8 +15,6 @@ namespace Upsaleslab.Templates.App.Services
         private readonly ILogger<CategoriesService> _logger;
         
         private readonly IMongoCollection<Category> _categories;
-        
-        public Guid UserId { get; set; }
 
         public CategoriesService(IMongoClient mongo, IEventService eventService, ILogger<CategoriesService> logger)
         {
@@ -25,7 +23,7 @@ namespace Upsaleslab.Templates.App.Services
             _categories = mongo.GetDatabase("TemplatesService").GetCollection<Category>("Categories");
         }
         
-        public async Task<(Result, Category)> CreateCategoryAsync(CreateCategory request)
+        public async Task<(Result, Category)> CreateCategoryAsync(CreateCategory request, Guid userId)
         {
             _logger.LogInformation($"Trying to create category {request.Name}");
             
@@ -36,7 +34,7 @@ namespace Upsaleslab.Templates.App.Services
                 return (Result.Conflict, null);
             }
 
-            var (category, categoryCreated) = Category.On(request, UserId);
+            var (category, categoryCreated) = Category.On(request, userId);
 
             await _categories.InsertOneAsync(category);
 
@@ -47,7 +45,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, category);
         }
 
-        public async Task<(Result, Category)> UpdateCategoryAsync(Guid catId, UpdateCategory request)
+        public async Task<(Result, Category)> UpdateCategoryAsync(Guid catId, UpdateCategory request, Guid userId)
         {
             _logger.LogInformation($"Trying to update category {request.Name}");
             
@@ -61,7 +59,7 @@ namespace Upsaleslab.Templates.App.Services
 
             if (category.CorrelationId == request.CorrelationId) return (Result.Conflict, null);
 
-            var categoryUpdated = category.On(request, UserId);
+            var categoryUpdated = category.On(request, userId);
 
             await _categories.ReplaceOneAsync(x => x.Id == catId, category);
 
@@ -72,7 +70,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, category);
         }
 
-        public async Task<Result> DeleteCategoryAsync(Guid catId, DeleteCategory request)
+        public async Task<Result> DeleteCategoryAsync(Guid catId, DeleteCategory request, Guid userId)
         {
             _logger.LogInformation($"Trying to delete category {catId}");
             
@@ -86,7 +84,7 @@ namespace Upsaleslab.Templates.App.Services
 
             if (category.CorrelationId == request.CorrelationId) return Result.Conflict;
 
-            var categoryDeleted = category.On(request, UserId);
+            var categoryDeleted = category.On(request, userId);
             
             await _categories.ReplaceOneAsync(x => x.Id == catId, category);
 

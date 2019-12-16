@@ -20,7 +20,7 @@ namespace Upsaleslab.Templates.App.Requests
         public string Category { get; set; }
 
         [Required]
-        public (int, int) AspectRatio { get; set; }
+        public string AspectRatio { get; set; }
 
         [Required]
         public List<Field> Payload { get; set; }

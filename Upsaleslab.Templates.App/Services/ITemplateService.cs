@@ -9,9 +9,9 @@ namespace Upsaleslab.Templates.App.Services
 {
     public interface ITemplateService
     {
-        Task<(Result, Template?)> CreateTemplateAsync(CreateTemplate request);
-        Task<(Result, Template?)> UpdateTemplateAsync(Guid templateId, UpdateTemplate request);
-        Task<Result> DeleteTemplateAsync(Guid templateId, DeleteTemplate request);
+        Task<(Result, Template?)> CreateTemplateAsync(CreateTemplate request, Guid userId);
+        Task<(Result, Template?)> UpdateTemplateAsync(Guid templateId, UpdateTemplate request, Guid userId);
+        Task<Result> DeleteTemplateAsync(Guid templateId, DeleteTemplate request, Guid userId);
         Task<(Result, Template?)> FindTemplateAsync(Guid templateId);
         Task<IEnumerable<Template>> ListTemplatesAsync(Paginate request, string category = null);
     }

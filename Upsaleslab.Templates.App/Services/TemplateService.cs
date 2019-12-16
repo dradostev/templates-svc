@@ -14,20 +14,25 @@ namespace Upsaleslab.Templates.App.Services
     {
         private readonly IEventService _eventService;
         
+        private readonly ICategoriesService _categoriesService;
+
         private readonly ILogger<TemplateService> _logger;
         
         private readonly IMongoCollection<Template> _templates;
         
-        public Guid UserId { get; set; }
+        private readonly IMongoCollection<Category> _categories;
 
-        public TemplateService(IMongoClient mongo, IEventService eventService, ILogger<TemplateService> logger)
+        public TemplateService(
+            IMongoClient mongo, IEventService eventService, ICategoriesService categoriesService, ILogger<TemplateService> logger)
         {
             _eventService = eventService;
+            _categoriesService = categoriesService;
             _logger = logger;
             _templates = mongo.GetDatabase("TemplatesService").GetCollection<Template>("Templates");
+            _categories = mongo.GetDatabase("TemplatesService").GetCollection<Category>("Categories");
         }
         
-        public async Task<(Result, Template?)> CreateTemplateAsync(CreateTemplate request)
+        public async Task<(Result, Template?)> CreateTemplateAsync(CreateTemplate request, Guid userId)
         {
             _logger.LogInformation($"Trying to create template {request.Title}");
             if (await _templates.CountDocumentsAsync(x => x.CorrelationId == request.CorrelationId) > 0)
@@ -35,7 +40,17 @@ namespace Upsaleslab.Templates.App.Services
                 return (Result.Conflict, null);
             }
 
-            var (template, templateCreated) = Template.On(request, UserId);
+            // if category doesn't exist create it
+            if (await _categories.CountDocumentsAsync(x => x.Name == request.Category) == 0)
+            {
+                await _categoriesService.CreateCategoryAsync(new CreateCategory
+                {
+                    CorrelationId = request.CorrelationId,
+                    Name = request.Category
+                }, userId);
+            }
+
+            var (template, templateCreated) = Template.On(request, userId);
 
             await _templates.InsertOneAsync(template);
 
@@ -46,7 +61,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, template);
         }
 
-        public async Task<(Result, Template?)> UpdateTemplateAsync(Guid templateId, UpdateTemplate request)
+        public async Task<(Result, Template?)> UpdateTemplateAsync(Guid templateId, UpdateTemplate request, Guid userId)
         {
             var template = await _templates
                 .Find(x => x.Id == templateId)
@@ -57,10 +72,20 @@ namespace Upsaleslab.Templates.App.Services
             if (template.Deleted > 0) return (Result.Gone, null);
 
             if (template.CorrelationId == request.CorrelationId) return (Result.Conflict, null);
-            
-            _logger.LogInformation($"Trying to update template {template.Id}");
 
-            var templateUpdated = template.On(request, UserId);
+            _logger.LogInformation($"Trying to update template {template.Id}");
+            
+            // if category doesn't exist create it
+            if (await _categories.CountDocumentsAsync(x => x.Name == request.Category) == 0)
+            {
+                await _categoriesService.CreateCategoryAsync(new CreateCategory
+                {
+                    CorrelationId = request.CorrelationId,
+                    Name = request.Category
+                }, userId);
+            }
+
+            var templateUpdated = template.On(request, userId);
 
             await _templates.ReplaceOneAsync(x => x.Id == templateId, template);
 
@@ -71,7 +96,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, template);
         }
 
-        public async Task<Result> DeleteTemplateAsync(Guid templateId, DeleteTemplate request)
+        public async Task<Result> DeleteTemplateAsync(Guid templateId, DeleteTemplate request, Guid userId)
         {
             var template = await _templates
                 .Find(x => x.Id == templateId)
@@ -83,9 +108,9 @@ namespace Upsaleslab.Templates.App.Services
 
             _logger.LogInformation($"Trying to delete template {template.Id}");
 
-            var templateDeleted = template.On(request, UserId);
+            var templateDeleted = template.On(request, userId);
             
-            await _templates.DeleteOneAsync(x => x.Id == templateId);
+            await _templates.ReplaceOneAsync(x => x.Id == templateId, template);
 
             await _eventService.PublishAsync(templateDeleted);
             

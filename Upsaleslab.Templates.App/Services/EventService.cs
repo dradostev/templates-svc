@@ -21,6 +21,7 @@ namespace Upsaleslab.Templates.App.Services
 
         public async Task PublishAsync<T>(Event<T> e)
         {
+            return;
             using var http = new HttpClient();
 
             var content = new StringContent(JsonConvert.SerializeObject(e));

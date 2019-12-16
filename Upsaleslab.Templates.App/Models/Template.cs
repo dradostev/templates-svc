@@ -19,7 +19,7 @@ namespace Upsaleslab.Templates.App.Models
 
         public string Category { get; private set; }
 
-        public (int, int) AspectRatio { get; private set; }
+        public string AspectRatio { get; private set; }
 
         public List<Field> Payload { get; private set; }
 
