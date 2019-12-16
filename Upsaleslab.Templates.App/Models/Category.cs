@@ -7,6 +7,8 @@ namespace Upsaleslab.Templates.App.Models
 {
     public class Category
     {
+        public Guid Id { get; private set; }
+        
         public string Name { get; private set; }
 
         public Guid CorrelationId { get; private set; }
@@ -22,6 +24,7 @@ namespace Upsaleslab.Templates.App.Models
         {
             var category = new Category
             {
+                Id = Guid.NewGuid(),
                 Name = request.Name,
                 CorrelationId = request.CorrelationId,
                 Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),

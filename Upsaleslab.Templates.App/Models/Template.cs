@@ -62,5 +62,51 @@ namespace Upsaleslab.Templates.App.Models
                 }
             });
         }
+
+        public Event<TemplateUpdated> On(UpdateTemplate request, Guid userId)
+        {
+            CorrelationId = request.CorrelationId;
+            Title = request.Title;
+            Description = request.Description;
+            Category = request.Category;
+            AspectRatio = request.AspectRatio;
+            Payload = request.Payload;
+            Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            
+            return new Event<TemplateUpdated>
+            {
+                CorrelationId = CorrelationId,
+                OccurredOn = Updated,
+                Type = "template-updated",
+                Version = 1,
+                UserId = userId,
+                Payload = new TemplateUpdated
+                {
+                    AspectRatio = AspectRatio,
+                    Category = Category,
+                    Payload = Payload,
+                    Title = Title
+                }
+            };
+        }
+
+        public Event<TemplateDeleted> On(DeleteTemplate request, Guid userId)
+        {
+            CorrelationId = request.CorrelationId;
+            Deleted = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            return new Event<TemplateDeleted>
+            {
+                Type = "template-deleted",
+                Version = 1,
+                CorrelationId = request.CorrelationId,
+                UserId = userId,
+                OccurredOn = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                Payload = new TemplateDeleted
+                {
+                    TemplateId = Id
+                }
+            };
+        }
     }
 }

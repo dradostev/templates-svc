@@ -4,7 +4,7 @@ using Upsaleslab.Templates.App.Models;
 
 namespace Upsaleslab.Templates.App.Events
 {
-    public class TemplateCreated
+    public class TemplateUpdated
     {
         public Guid TemplateId { get; set; }
         
