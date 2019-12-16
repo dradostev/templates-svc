@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- name: projects-dep-v1
+ name: templates-dep-v1
  namespace: upsaleslab
 spec:
  replicas: 1
  selector:
   matchLabels:
-   app: projects-dep-v1
+   app: templates-dep-v1
  strategy:
   type: RollingUpdate
   rollingUpdate:
@@ -16,19 +16,19 @@ spec:
  template:
   metadata:
    labels:
-    app: projects-dep-v1
+    app: templates-dep-v1
   spec:
    imagePullSecrets:
     - name: pipeline-docker-registry
    containers:
-    - name: projects-dep
+    - name: templates-dep
       imagePullPolicy: Always
       image: ${CICD_IMAGE}:${CICD_GIT_COMMIT}
       envFrom:
        - configMapRef:
           name: jwt-config-map
        - configMapRef:
-          name: projects-config-map
+          name: templates-config-map
       env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
@@ -60,7 +60,7 @@ spec:
        - name: RABBITMQ_CONSUME_TOPICS
          value: "svc.tools.events"
        - name: RABBITMQ_PUBLISH_TOPIC
-         value: "svc.projects.events"
+         value: "svc.templates.events"
       envFrom:
        - configMapRef:
           name: rabbit-config-map
@@ -81,12 +81,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
- name: projects-svc-v1
+ name: templates-svc-v1
  namespace: upsaleslab
 spec:
  type: ClusterIP
  selector:
-  app: projects-dep-v1
+  app: templates-dep-v1
  ports:
   - port: 5000
     targetPort: 5000

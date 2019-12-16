@@ -9,4 +9,4 @@ WORKDIR /app
 COPY --from=build-env /out .
 
 EXPOSE 5000
-ENTRYPOINT ["dotnet", "Upsaleslab.Projects.App.dll"]
+ENTRYPOINT ["dotnet", "Upsaleslab.Templates.App.dll"]

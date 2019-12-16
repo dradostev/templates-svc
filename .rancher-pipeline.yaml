@@ -4,7 +4,7 @@ stages:
       - publishImageConfig:
           dockerfilePath: ./Dockerfile
           buildContext: .
-          tag: upsaleslab/projects-svc:${CICD_GIT_COMMIT}
+          tag: upsaleslab/templates-svc:${CICD_GIT_COMMIT}
   - name: Deploy to Cluster
     steps:
       - applyYamlConfig:
