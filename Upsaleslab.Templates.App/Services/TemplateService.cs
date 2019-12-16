@@ -132,9 +132,9 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, template);
         }
 
-        public async Task<IEnumerable<Template>> ListTemplatesAsync(Paginate request, string category = null)
+        public async Task<IEnumerable<Template>> ListTemplatesAsync(Paginate request)
         {
-            if (category is null)
+            if (string.IsNullOrEmpty(request.Category))
             {
                 return await _templates
                     .Find(x => x.Deleted == 0)
@@ -144,7 +144,7 @@ namespace Upsaleslab.Templates.App.Services
             }
 
             return await _templates
-                .Find(x => x.Deleted == 0 && x.Category == category)
+                .Find(x => x.Deleted == 0 && x.Category == request.Category)
                 .Skip(request.Offset)
                 .Limit(request.Limit)
                 .ToListAsync();

@@ -13,6 +13,6 @@ namespace Upsaleslab.Templates.App.Services
         Task<(Result, Template?)> UpdateTemplateAsync(Guid templateId, UpdateTemplate request, Guid userId);
         Task<Result> DeleteTemplateAsync(Guid templateId, DeleteTemplate request, Guid userId);
         Task<(Result, Template?)> FindTemplateAsync(Guid templateId);
-        Task<IEnumerable<Template>> ListTemplatesAsync(Paginate request, string category = null);
+        Task<IEnumerable<Template>> ListTemplatesAsync(Paginate request);
     }
 }
