@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Upsaleslab.Templates.App.Services;
 
 namespace Upsaleslab.Templates.App
 {
@@ -50,6 +51,9 @@ namespace Upsaleslab.Templates.App
             var settings = MongoClientSettings.FromUrl(new MongoUrl(Configuration["MONGO_CONNECTION_STRING"]));
             settings.SslSettings = new SslSettings { EnabledSslProtocols = SslProtocols.Tls12 };
             services.AddScoped<IMongoClient>(x => new MongoClient(settings));
+
+            services.AddScoped<ICategoriesService, CategoriesService>();
+            services.AddScoped<ITemplateService, TemplateService>();
 
             services.AddSwaggerGen(c => c.SwaggerDoc("api-docs", new OpenApiInfo{Title = "Templates", Version = "v1"}));
         }
