@@ -1,0 +1,18 @@
+stages:
+  - name: Docker Build
+    steps:
+      - publishImageConfig:
+          dockerfilePath: ./Dockerfile
+          buildContext: .
+          tag: upsaleslab/projects-svc:${CICD_GIT_COMMIT}
+  - name: Deploy to Cluster
+    steps:
+      - applyYamlConfig:
+          path: ./deployment.yaml
+timeout: 60
+branch:
+  include:
+    - release
+  exclude:
+    - dev
+notification: {}

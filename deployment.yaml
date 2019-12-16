@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: projects-dep-v1
+ namespace: upsaleslab
+spec:
+ replicas: 1
+ selector:
+  matchLabels:
+   app: projects-dep-v1
+ strategy:
+  type: RollingUpdate
+  rollingUpdate:
+   maxUnavailable: 1
+   maxSurge: 1
+ template:
+  metadata:
+   labels:
+    app: projects-dep-v1
+  spec:
+   imagePullSecrets:
+    - name: pipeline-docker-registry
+   containers:
+    - name: projects-dep
+      imagePullPolicy: Always
+      image: ${CICD_IMAGE}:${CICD_GIT_COMMIT}
+      envFrom:
+       - configMapRef:
+          name: jwt-config-map
+       - configMapRef:
+          name: projects-config-map
+      env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: MQ_SIDECAR_ENDPOINT
+          value: "http://localhost:5001"
+      resources:
+       limits:
+        memory: "256Mi"
+        cpu: "200m"
+      ports:
+       - containerPort: 5000
+      livenessProbe:
+       initialDelaySeconds: 20
+       periodSeconds: 5
+       httpGet:
+        path: /health
+        port: 5000
+        scheme: HTTP
+    - name: queue-sc
+      imagePullPolicy: Always
+      image: upsaleslab/queue-sc
+      env:
+       - name: ASPNETCORE_ENVIRONMENT
+         value: "Production"
+       - name: APP_PORT
+         value: "5001"
+       - name: RABBITMQ_EXCHANGE
+         value: "events"
+       - name: RABBITMQ_CONSUME_TOPICS
+         value: "svc.tools.events"
+       - name: RABBITMQ_PUBLISH_TOPIC
+         value: "svc.projects.events"
+      envFrom:
+       - configMapRef:
+          name: rabbit-config-map
+      resources:
+       limits:
+        memory: "256Mi"
+        cpu: "200m"
+      ports:
+       - containerPort: 5001
+      livenessProbe:
+       initialDelaySeconds: 10
+       periodSeconds: 5
+       httpGet:
+        path: /health
+        port: 5001
+        scheme: HTTP
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: projects-svc-v1
+ namespace: upsaleslab
+spec:
+ type: ClusterIP
+ selector:
+  app: projects-dep-v1
+ ports:
+  - port: 5000
+    targetPort: 5000
