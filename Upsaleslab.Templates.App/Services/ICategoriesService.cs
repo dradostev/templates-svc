@@ -9,8 +9,8 @@ namespace Upsaleslab.Templates.App.Services
     public interface ICategoriesService
     {
         Task<(Result, Category?)> CreateCategoryAsync(CreateCategory request);
-        Task<(Result, Category?)> UpdateCategoryAsync(UpdateCategory request);
-        Task<Result> DeleteCategoryAsync(Guid catId);
+        Task<(Result, Category?)> UpdateCategoryAsync(Guid catId, UpdateCategory request);
+        Task<Result> DeleteCategoryAsync(Guid catId, DeleteCategory request);
         Task<IEnumerable<Category>> ListCategoriesAsync();
     }
 }

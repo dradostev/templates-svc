@@ -29,10 +29,9 @@ namespace Upsaleslab.Templates.App.Services
         
         public async Task<(Result, Template?)> CreateTemplateAsync(CreateTemplate request)
         {
+            _logger.LogInformation($"Trying to create template {request.Title}");
             if (await _templates.CountDocumentsAsync(x => x.CorrelationId == request.CorrelationId) > 0)
             {
-                _logger.LogInformation($"Tried to create template {request.Title} - already exists." +
-                                       $"[CorrelationId: {request.CorrelationId}]");
                 return (Result.Conflict, null);
             }
 
@@ -41,6 +40,8 @@ namespace Upsaleslab.Templates.App.Services
             await _templates.InsertOneAsync(template);
 
             await _eventService.PublishAsync(templateCreated);
+            
+            _logger.LogInformation($"Template {template.Id} created");
 
             return (Result.Successful, template);
         }
@@ -50,16 +51,22 @@ namespace Upsaleslab.Templates.App.Services
             var template = await _templates
                 .Find(x => x.Id == templateId)
                 .FirstOrDefaultAsync();
-
+            
             if (template is null) return (Result.NotFound, null);
-
+            
             if (template.Deleted > 0) return (Result.Gone, null);
 
             if (template.CorrelationId == request.CorrelationId) return (Result.Conflict, null);
+            
+            _logger.LogInformation($"Trying to update template {template.Id}");
 
             var templateUpdated = template.On(request, UserId);
 
+            await _templates.ReplaceOneAsync(x => x.Id == templateId, template);
+
             await _eventService.PublishAsync(templateUpdated);
+            
+            _logger.LogInformation($"Template {template.Id} updated");
 
             return (Result.Successful, template);
         }
@@ -74,11 +81,15 @@ namespace Upsaleslab.Templates.App.Services
             
             if (template.Deleted > 0) return Result.Gone;
 
-            var templateDeleted = template.On(request, UserId);
+            _logger.LogInformation($"Trying to delete template {template.Id}");
 
+            var templateDeleted = template.On(request, UserId);
+            
             await _templates.DeleteOneAsync(x => x.Id == templateId);
 
             await _eventService.PublishAsync(templateDeleted);
+            
+            _logger.LogInformation($"Template {template.Id} deleted");
 
             return Result.Successful;
         }

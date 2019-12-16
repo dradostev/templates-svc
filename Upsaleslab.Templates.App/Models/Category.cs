@@ -63,5 +63,24 @@ namespace Upsaleslab.Templates.App.Models
                 }
             };
         }
+
+        public Event<CategoryDeleted> On(DeleteCategory request, Guid userId)
+        {
+            CorrelationId = request.CorrelationId;
+            Deleted = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            
+            return new Event<CategoryDeleted>
+            {
+                Type = "category-updated",
+                Version = 1,
+                CorrelationId = request.CorrelationId,
+                UserId = userId,
+                OccurredOn = Deleted,
+                Payload = new CategoryDeleted
+                {
+                    CategoryId = Id
+                }
+            };
+        }
     }
 }
