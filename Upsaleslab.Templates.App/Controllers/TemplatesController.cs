@@ -12,7 +12,7 @@ using Upsaleslab.Templates.App.Services;
 
 namespace Upsaleslab.Templates.App.Controllers
 {
-    [ApiController, Route("/"), Authorize]
+    [ApiController, Route("/")]
     public class TemplatesController : Controller
     {
         private readonly ITemplateService _templateService;
@@ -25,7 +25,7 @@ namespace Upsaleslab.Templates.App.Controllers
             _templateService = templateService;
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin")]
         public async Task<ActionResult<Template>> Post([FromBody] CreateTemplate request) =>
             await _templateService.CreateTemplateAsync(request, UserId) switch
             {
@@ -34,7 +34,7 @@ namespace Upsaleslab.Templates.App.Controllers
                 _ => (ActionResult<Template>) StatusCode(500)
             };
         
-        [HttpPut("{templateId}")]
+        [HttpPut("{templateId}"), Authorize(Roles = "admin")]
         public async Task<ActionResult<Template>> Post(Guid templateId, [FromBody] UpdateTemplate request) =>
             await _templateService.UpdateTemplateAsync(templateId, request, UserId) switch
             {
@@ -45,7 +45,7 @@ namespace Upsaleslab.Templates.App.Controllers
                 _ => (ActionResult<Template>) StatusCode(500)
             };
         
-        [HttpDelete("{templateId}")]
+        [HttpDelete("{templateId}"), Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(Guid templateId, [FromBody] DeleteTemplate request) =>
             await _templateService.DeleteTemplateAsync(templateId, request, UserId) switch
             {

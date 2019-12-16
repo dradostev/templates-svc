@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Upsaleslab.Templates.App.Models;
 using Upsaleslab.Templates.App.Requests;
@@ -23,7 +24,7 @@ namespace Upsaleslab.Templates.App.Controllers
             _categoriesService = categoriesService;
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin")]
         public async Task<ActionResult<Category>> Post([FromBody] CreateCategory request) =>
             await _categoriesService.CreateCategoryAsync(request, UserId) switch
             {
@@ -32,7 +33,7 @@ namespace Upsaleslab.Templates.App.Controllers
                 _ => (ActionResult<Category>) StatusCode(500)
             };
         
-        [HttpPut("{catId}")]
+        [HttpPut("{catId}"), Authorize(Roles = "admin")]
         public async Task<ActionResult<Category>> Post(Guid catId, [FromBody] UpdateCategory request) =>
             await _categoriesService.UpdateCategoryAsync(catId, request, UserId) switch
             {
@@ -43,7 +44,7 @@ namespace Upsaleslab.Templates.App.Controllers
                 _ => (ActionResult<Category>) StatusCode(500)
             };
         
-        [HttpDelete("{catId}")]
+        [HttpDelete("{catId}"), Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(Guid catId, [FromBody] DeleteCategory request) =>
             await _categoriesService.DeleteCategoryAsync(catId, request, UserId) switch
             {
