@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Upsaleslab.Projects.App.Models;
 using Upsaleslab.Templates.App.Events;
@@ -134,17 +135,20 @@ namespace Upsaleslab.Templates.App.Services
 
         public async Task<IEnumerable<Template>> ListTemplatesAsync(Paginate request)
         {
-            if (string.IsNullOrEmpty(request.Category))
+            var builder = Builders<Template>.Filter;
+            var filter = builder.Eq("Deleted", 0);
+            if (!string.IsNullOrEmpty(request.Category))
             {
-                return await _templates
-                    .Find(x => x.Deleted == 0)
-                    .Skip(request.Offset)
-                    .Limit(request.Limit)
-                    .ToListAsync();
+                filter &= builder.Eq("Category", request.Category);
+            }
+
+            if (!string.IsNullOrEmpty(request.AspectRatio))
+            {
+                filter &= builder.Eq("AspectRatio", request.AspectRatio);
             }
 
             return await _templates
-                .Find(x => x.Deleted == 0 && x.Category == request.Category)
+                .Find(filter)
                 .Skip(request.Offset)
                 .Limit(request.Limit)
                 .ToListAsync();
