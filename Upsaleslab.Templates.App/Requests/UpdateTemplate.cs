@@ -24,5 +24,11 @@ namespace Upsaleslab.Templates.App.Requests
 
         [Required]
         public List<Field> Payload { get; set; }
+        
+        [Required]
+        public Uri PreviewVideoUrl { get; set; }
+        
+        [Required]
+        public Uri PreviewImageUrl { get; set; }
     }
 }

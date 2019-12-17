@@ -23,6 +23,10 @@ namespace Upsaleslab.Templates.App.Models
 
         public List<Field> Payload { get; private set; }
 
+        public Uri PreviewVideoUrl { get; private set; }
+        
+        public Uri PreviewImageUrl { get; private set; }
+
         public long Created { get; private set; }
 
         public long Updated { get; private set; }
@@ -41,6 +45,8 @@ namespace Upsaleslab.Templates.App.Models
                 Category = request.Category,
                 AspectRatio = request.AspectRatio,
                 Payload = request.Payload,
+                PreviewImageUrl = request.PreviewImageUrl,
+                PreviewVideoUrl = request.PreviewVideoUrl,
                 Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 Updated = 0,
                 Deleted = 0
@@ -71,6 +77,8 @@ namespace Upsaleslab.Templates.App.Models
             Category = request.Category;
             AspectRatio = request.AspectRatio;
             Payload = request.Payload;
+            PreviewImageUrl = request.PreviewImageUrl;
+            PreviewVideoUrl = request.PreviewVideoUrl;
             Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             
             return new Event<TemplateUpdated>
