@@ -145,14 +145,21 @@ namespace Upsaleslab.Templates.App.Services
         {
             var builder = Builders<Template>.Filter;
             var filter = builder.Eq("Deleted", 0);
-            if (!string.IsNullOrEmpty(request.Category))
+            
+            if (request.Tags != null && request.Tags.Length > 0)
             {
-                filter &= builder.Eq("Category", request.Category);
+                foreach (var tagName in request.Tags)
+                {
+                    filter &= builder.Where(x => x.Tags.Contains(tagName));
+                }
             }
 
-            if (!string.IsNullOrEmpty(request.AspectRatio))
+            if (request.AspectRatios != null && request.AspectRatios.Length > 0)
             {
-                filter &= builder.Eq("AspectRatio", request.AspectRatio);
+                foreach (var aspectRatio in request.AspectRatios)
+                {
+                    filter &= builder.Where(x => x.AspectRatios.Contains(aspectRatio));
+                }
             }
 
             return await _templates
