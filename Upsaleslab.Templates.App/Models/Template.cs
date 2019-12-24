@@ -13,19 +13,17 @@ namespace Upsaleslab.Templates.App.Models
         [JsonIgnore]
         public Guid CorrelationId { get; private set; }
 
-        public string Title { get; private set; }
+        public Dictionary<string, string> Title { get; private set; }
 
-        public string Description { get; private set; }
+        public Dictionary<string, string> Description { get; private set; }
 
-        public string Category { get; private set; }
+        public string[] Tags { get; private set; }
 
-        public string AspectRatio { get; private set; }
+        public string[] AspectRatios { get; private set; }
 
-        public List<Field> Payload { get; private set; }
+        public List<Slide> Slides { get; private set; }
 
-        public Uri PreviewVideoUrl { get; private set; }
-        
-        public Uri PreviewImageUrl { get; private set; }
+        public Preview Preview { get; private set; }
 
         public long Created { get; private set; }
 
@@ -42,11 +40,10 @@ namespace Upsaleslab.Templates.App.Models
                 CorrelationId = request.CorrelationId,
                 Title = request.Title,
                 Description = request.Description,
-                Category = request.Category,
-                AspectRatio = request.AspectRatio,
-                Payload = request.Payload,
-                PreviewImageUrl = request.PreviewImageUrl,
-                PreviewVideoUrl = request.PreviewVideoUrl,
+                Tags = request.Tags,
+                AspectRatios = request.AspectRatios,
+                Slides = request.Slides,
+                Preview = request.Preview,
                 Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 Updated = 0,
                 Deleted = 0
@@ -62,9 +59,9 @@ namespace Upsaleslab.Templates.App.Models
                 Payload = new TemplateCreated
                 {
                     Title = template.Title,
-                    AspectRatio = template.AspectRatio,
-                    Category = template.Category,
-                    Payload = template.Payload
+                    AspectRatios = template.AspectRatios,
+                    Tags = template.Tags,
+                    Slides = template.Slides
                 }
             });
         }
@@ -74,11 +71,10 @@ namespace Upsaleslab.Templates.App.Models
             CorrelationId = request.CorrelationId;
             Title = request.Title;
             Description = request.Description;
-            Category = request.Category;
-            AspectRatio = request.AspectRatio;
-            Payload = request.Payload;
-            PreviewImageUrl = request.PreviewImageUrl;
-            PreviewVideoUrl = request.PreviewVideoUrl;
+            Tags = request.Tags;
+            AspectRatios = request.AspectRatios;
+            Slides = request.Slides;
+            Preview = request.Preview;
             Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             
             return new Event<TemplateUpdated>
@@ -90,9 +86,9 @@ namespace Upsaleslab.Templates.App.Models
                 UserId = userId,
                 Payload = new TemplateUpdated
                 {
-                    AspectRatio = AspectRatio,
-                    Category = Category,
-                    Payload = Payload,
+                    AspectRatios = AspectRatios,
+                    Tags = Tags,
+                    Slides = Slides,
                     Title = Title
                 }
             };

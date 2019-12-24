@@ -53,7 +53,7 @@ namespace Upsaleslab.Templates.App
             services.AddScoped<IMongoClient>(x => new MongoClient(settings));
 
             services.AddScoped<IEventService, EventService>();
-            services.AddScoped<ICategoriesService, CategoriesService>();
+            services.AddScoped<ITagService, TagService>();
             services.AddScoped<ITemplateService, TemplateService>();
 
             services.AddSwaggerGen(c => c.SwaggerDoc("api-docs", new OpenApiInfo{Title = "Templates", Version = "v1"}));

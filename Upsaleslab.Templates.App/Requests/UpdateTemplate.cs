@@ -11,24 +11,21 @@ namespace Upsaleslab.Templates.App.Requests
         public Guid CorrelationId { get; set; }
         
         [Required]
-        public string Title { get; set; }
+        public Dictionary<string, string> Title { get; set; }
         
         [Required]
-        public string Description { get; set; }
+        public Dictionary<string, string> Description { get; set; }
 
         [Required]
-        public string Category { get; set; }
+        public string[] Tags { get; set; }
 
         [Required]
-        public string AspectRatio { get; set; }
+        public string[] AspectRatios { get; set; }
 
         [Required]
-        public List<Field> Payload { get; set; }
+        public List<Slide> Slides { get; set; }
         
         [Required]
-        public Uri PreviewVideoUrl { get; set; }
-        
-        [Required]
-        public Uri PreviewImageUrl { get; set; }
+        public Preview Preview { get; set; }
     }
 }

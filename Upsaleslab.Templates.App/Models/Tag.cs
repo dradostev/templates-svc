@@ -1,15 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Upsaleslab.Templates.App.Events;
 using Upsaleslab.Templates.App.Requests;
 
 namespace Upsaleslab.Templates.App.Models
 {
-    public class Category
+    public class Tag
     {
         public Guid Id { get; private set; }
         
         public string Name { get; private set; }
+        
+        public Dictionary<string, string> Title { get; private set; }
 
         public Guid CorrelationId { get; private set; }
         
@@ -20,65 +23,70 @@ namespace Upsaleslab.Templates.App.Models
         [JsonIgnore]
         public long Deleted { get; private set; }
 
-        public static (Category, Event<CategoryCreated>) On(CreateCategory request, Guid userId)
+        public static (Tag, Event<TagCreated>) On(CreateTag request, Guid userId)
         {
-            var category = new Category
+            var tag = new Tag
             {
                 Id = Guid.NewGuid(),
                 Name = request.Name,
+                Title = request.Title,
                 CorrelationId = request.CorrelationId,
                 Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 Updated = 0,
                 Deleted = 0
             };
-            return (category, new Event<CategoryCreated>
+            return (tag, new Event<TagCreated>
             {
-                Type = "category-created",
+                Type = "tag-created",
                 Version = 1,
                 CorrelationId = request.CorrelationId,
                 UserId = userId,
-                OccurredOn = category.Created,
-                Payload = new CategoryCreated
+                OccurredOn = tag.Created,
+                Payload = new TagCreated
                 {
-                    Name = category.Name
+                    Name = tag.Name,
+                    Title = tag.Title
                 }
             });
         }
 
-        public Event<CategoryUpdated> On(UpdateCategory request, Guid userId)
+        public Event<TagUpdated> On(UpdateTag request, Guid userId)
         {
             Name = request.Name;
+            Title = request.Title;
             CorrelationId = request.CorrelationId;
             Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            return new Event<CategoryUpdated>
+            
+            return new Event<TagUpdated>
             {
-                Type = "category-updated",
+                Type = "tag-updated",
                 Version = 1,
                 CorrelationId = request.CorrelationId,
                 UserId = userId,
                 OccurredOn = Updated,
-                Payload = new CategoryUpdated
+                Payload = new TagUpdated
                 {
-                    Name = Name
+                    Name = Name,
+                    Title = Title
                 }
             };
         }
 
-        public Event<CategoryDeleted> On(DeleteCategory request, Guid userId)
+        public Event<TagDeleted> On(DeleteTag request, Guid userId)
         {
             CorrelationId = request.CorrelationId;
             Deleted = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             
-            return new Event<CategoryDeleted>
+            return new Event<TagDeleted>
             {
-                Type = "category-updated",
+                Type = "tag-deleted",
                 Version = 1,
                 CorrelationId = request.CorrelationId,
                 UserId = userId,
                 OccurredOn = Deleted,
-                Payload = new CategoryDeleted
+                Payload = new TagDeleted
                 {
-                    CategoryId = Id
+                    TagId = Id
                 }
             };
         }

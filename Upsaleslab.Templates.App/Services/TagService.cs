@@ -5,51 +5,52 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Upsaleslab.Templates.App.Models;
 using Upsaleslab.Templates.App.Requests;
+using Tag = Upsaleslab.Templates.App.Models.Tag;
 
 namespace Upsaleslab.Templates.App.Services
 {
-    public class CategoriesService : ICategoriesService
+    public class TagService : ITagService
     {
         private readonly IEventService _eventService;
         
-        private readonly ILogger<CategoriesService> _logger;
+        private readonly ILogger<TagService> _logger;
         
-        private readonly IMongoCollection<Category> _categories;
+        private readonly IMongoCollection<Tag> _tags;
 
-        public CategoriesService(IMongoClient mongo, IEventService eventService, ILogger<CategoriesService> logger)
+        public TagService(IMongoClient mongo, IEventService eventService, ILogger<TagService> logger)
         {
             _eventService = eventService;
             _logger = logger;
-            _categories = mongo.GetDatabase("TemplatesService").GetCollection<Category>("Categories");
+            _tags = mongo.GetDatabase("TemplatesService").GetCollection<Tag>("Tags");
         }
         
-        public async Task<(Result, Category)> CreateCategoryAsync(CreateCategory request, Guid userId)
+        public async Task<(Result, Tag)> CreateAsync(CreateTag request, Guid userId)
         {
-            _logger.LogInformation($"Trying to create category {request.Name}");
+            _logger.LogInformation($"Trying to create tag {request.Name}");
             
-            if (await _categories.CountDocumentsAsync(
+            if (await _tags.CountDocumentsAsync(
                     x => x.CorrelationId == request.CorrelationId
                          || x.Name == request.Name) > 0)
             {
                 return (Result.Conflict, null);
             }
 
-            var (category, categoryCreated) = Category.On(request, userId);
+            var (category, categoryCreated) = Tag.On(request, userId);
 
-            await _categories.InsertOneAsync(category);
+            await _tags.InsertOneAsync(category);
 
             await _eventService.PublishAsync(categoryCreated);
             
-            _logger.LogInformation($"Category {request.Name} created");
+            _logger.LogInformation($"Tag {request.Name} created");
 
             return (Result.Successful, category);
         }
 
-        public async Task<(Result, Category)> UpdateCategoryAsync(Guid catId, UpdateCategory request, Guid userId)
+        public async Task<(Result, Tag)> UpdateAsync(Guid catId, UpdateTag request, Guid userId)
         {
-            _logger.LogInformation($"Trying to update category {request.Name}");
+            _logger.LogInformation($"Trying to update tag {request.Name}");
             
-            var category = await _categories
+            var category = await _tags
                 .Find(x => x.Id == catId)
                 .FirstOrDefaultAsync();
             
@@ -61,20 +62,20 @@ namespace Upsaleslab.Templates.App.Services
 
             var categoryUpdated = category.On(request, userId);
 
-            await _categories.ReplaceOneAsync(x => x.Id == catId, category);
+            await _tags.ReplaceOneAsync(x => x.Id == catId, category);
 
             await _eventService.PublishAsync(categoryUpdated);
             
-            _logger.LogInformation($"Category {request.Name} updated");
+            _logger.LogInformation($"Tag {request.Name} updated");
 
             return (Result.Successful, category);
         }
 
-        public async Task<Result> DeleteCategoryAsync(Guid catId, DeleteCategory request, Guid userId)
+        public async Task<Result> DeleteAsync(Guid catId, DeleteTag request, Guid userId)
         {
-            _logger.LogInformation($"Trying to delete category {catId}");
+            _logger.LogInformation($"Trying to delete tag {catId}");
             
-            var category = await _categories
+            var category = await _tags
                 .Find(x => x.Id == catId)
                 .FirstOrDefaultAsync();
             
@@ -86,16 +87,16 @@ namespace Upsaleslab.Templates.App.Services
 
             var categoryDeleted = category.On(request, userId);
             
-            await _categories.ReplaceOneAsync(x => x.Id == catId, category);
+            await _tags.ReplaceOneAsync(x => x.Id == catId, category);
 
             await _eventService.PublishAsync(categoryDeleted);
             
-            _logger.LogInformation($"Category {category.Name} deleted");
+            _logger.LogInformation($"Tag {category.Name} deleted");
 
             return Result.Successful;
         }
 
-        public async Task<IEnumerable<Category>> ListCategoriesAsync() =>
-            await _categories.Find(x => true).ToListAsync();
+        public async Task<IEnumerable<Tag>> ListAsync() =>
+            await _tags.Find(x => true).ToListAsync();
     }
 }

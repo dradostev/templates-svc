@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -8,6 +9,7 @@ using Upsaleslab.Projects.App.Models;
 using Upsaleslab.Templates.App.Events;
 using Upsaleslab.Templates.App.Models;
 using Upsaleslab.Templates.App.Requests;
+using Tag = Upsaleslab.Templates.App.Models.Tag;
 
 namespace Upsaleslab.Templates.App.Services
 {
@@ -15,25 +17,25 @@ namespace Upsaleslab.Templates.App.Services
     {
         private readonly IEventService _eventService;
         
-        private readonly ICategoriesService _categoriesService;
+        private readonly ITagService _tagService;
 
         private readonly ILogger<TemplateService> _logger;
         
         private readonly IMongoCollection<Template> _templates;
         
-        private readonly IMongoCollection<Category> _categories;
+        private readonly IMongoCollection<Tag> _tags;
 
         public TemplateService(
-            IMongoClient mongo, IEventService eventService, ICategoriesService categoriesService, ILogger<TemplateService> logger)
+            IMongoClient mongo, IEventService eventService, ITagService tagService, ILogger<TemplateService> logger)
         {
             _eventService = eventService;
-            _categoriesService = categoriesService;
+            _tagService = tagService;
             _logger = logger;
             _templates = mongo.GetDatabase("TemplatesService").GetCollection<Template>("Templates");
-            _categories = mongo.GetDatabase("TemplatesService").GetCollection<Category>("Categories");
+            _tags = mongo.GetDatabase("TemplatesService").GetCollection<Tag>("Tags");
         }
         
-        public async Task<(Result, Template?)> CreateTemplateAsync(CreateTemplate request, Guid userId)
+        public async Task<(Result, Template?)> CreateAsync(CreateTemplate request, Guid userId)
         {
             _logger.LogInformation($"Trying to create template {request.Title}");
             if (await _templates.CountDocumentsAsync(x => x.CorrelationId == request.CorrelationId) > 0)
@@ -41,14 +43,17 @@ namespace Upsaleslab.Templates.App.Services
                 return (Result.Conflict, null);
             }
 
-            // if category doesn't exist create it
-            if (await _categories.CountDocumentsAsync(x => x.Name == request.Category) == 0)
+            foreach (var tagName in request.Tags)
             {
-                await _categoriesService.CreateCategoryAsync(new CreateCategory
+                if (await _tags.CountDocumentsAsync(x => x.Name == tagName) == 0)
                 {
-                    CorrelationId = request.CorrelationId,
-                    Name = request.Category
-                }, userId);
+                    await _tagService.CreateAsync(new CreateTag
+                    {
+                        CorrelationId = request.CorrelationId,
+                        Name = tagName,
+                        Title = new Dictionary<string, string>{ {"en", tagName} }
+                    }, userId);
+                }
             }
 
             var (template, templateCreated) = Template.On(request, userId);
@@ -62,7 +67,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, template);
         }
 
-        public async Task<(Result, Template?)> UpdateTemplateAsync(Guid templateId, UpdateTemplate request, Guid userId)
+        public async Task<(Result, Template?)> UpdateAsync(Guid templateId, UpdateTemplate request, Guid userId)
         {
             var template = await _templates
                 .Find(x => x.Id == templateId)
@@ -76,14 +81,17 @@ namespace Upsaleslab.Templates.App.Services
 
             _logger.LogInformation($"Trying to update template {template.Id}");
             
-            // if category doesn't exist create it
-            if (await _categories.CountDocumentsAsync(x => x.Name == request.Category) == 0)
+            foreach (var tagName in request.Tags)
             {
-                await _categoriesService.CreateCategoryAsync(new CreateCategory
+                if (await _tags.CountDocumentsAsync(x => x.Name == tagName) == 0)
                 {
-                    CorrelationId = request.CorrelationId,
-                    Name = request.Category
-                }, userId);
+                    await _tagService.CreateAsync(new CreateTag
+                    {
+                        CorrelationId = request.CorrelationId,
+                        Name = tagName,
+                        Title = new Dictionary<string, string>{ {"en", tagName} }
+                    }, userId);
+                }
             }
 
             var templateUpdated = template.On(request, userId);
@@ -97,7 +105,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, template);
         }
 
-        public async Task<Result> DeleteTemplateAsync(Guid templateId, DeleteTemplate request, Guid userId)
+        public async Task<Result> DeleteAsync(Guid templateId, DeleteTemplate request, Guid userId)
         {
             var template = await _templates
                 .Find(x => x.Id == templateId)
@@ -120,7 +128,7 @@ namespace Upsaleslab.Templates.App.Services
             return Result.Successful;
         }
 
-        public async Task<(Result, Template?)> FindTemplateAsync(Guid templateId)
+        public async Task<(Result, Template?)> FindAsync(Guid templateId)
         {
             var template = await _templates
                 .Find(x => x.Id == templateId)
@@ -133,7 +141,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, template);
         }
 
-        public async Task<IEnumerable<Template>> ListTemplatesAsync(Paginate request)
+        public async Task<IEnumerable<Template>> ListAsync(Paginate request)
         {
             var builder = Builders<Template>.Filter;
             var filter = builder.Eq("Deleted", 0);

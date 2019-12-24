@@ -27,7 +27,7 @@ namespace Upsaleslab.Templates.App.Controllers
 
         [HttpPost, Authorize(Roles = "admin")]
         public async Task<ActionResult<Template>> Post([FromBody] CreateTemplate request) =>
-            await _templateService.CreateTemplateAsync(request, UserId) switch
+            await _templateService.CreateAsync(request, UserId) switch
             {
                 (Result.Successful, var template) => StatusCode(201, template),
                 (Result.Conflict, null) => Conflict(),
@@ -36,7 +36,7 @@ namespace Upsaleslab.Templates.App.Controllers
         
         [HttpPut("{templateId}"), Authorize(Roles = "admin")]
         public async Task<ActionResult<Template>> Post(Guid templateId, [FromBody] UpdateTemplate request) =>
-            await _templateService.UpdateTemplateAsync(templateId, request, UserId) switch
+            await _templateService.UpdateAsync(templateId, request, UserId) switch
             {
                 (Result.Successful, var template) => StatusCode(201, template),
                 (Result.Conflict, null) => Conflict(),
@@ -47,7 +47,7 @@ namespace Upsaleslab.Templates.App.Controllers
         
         [HttpDelete("{templateId}"), Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(Guid templateId, [FromBody] DeleteTemplate request) =>
-            await _templateService.DeleteTemplateAsync(templateId, request, UserId) switch
+            await _templateService.DeleteAsync(templateId, request, UserId) switch
             {
                 Result.Successful => Ok(),
                 Result.Conflict => Conflict(),
@@ -58,11 +58,11 @@ namespace Upsaleslab.Templates.App.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Template>>> Get([FromQuery] Paginate request) =>
-            Ok(await _templateService.ListTemplatesAsync(request));
+            Ok(await _templateService.ListAsync(request));
 
         [HttpGet("{templateId}")]
         public async Task<ActionResult<Template>> Get(Guid templateId) =>
-            await _templateService.FindTemplateAsync(templateId) switch
+            await _templateService.FindAsync(templateId) switch
             {
                 (Result.Successful, var template) => Ok(template),
                 (Result.NotFound, null) => NotFound(),

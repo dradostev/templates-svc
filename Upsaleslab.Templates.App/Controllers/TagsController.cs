@@ -11,42 +11,42 @@ using Upsaleslab.Templates.App.Services;
 
 namespace Upsaleslab.Templates.App.Controllers
 {
-    [ApiController, Route("categories")]
-    public class CategoriesController : Controller
+    [ApiController, Route("tags")]
+    public class TagsController : Controller
     {
-        private readonly ICategoriesService _categoriesService;
+        private readonly ITagService _tagService;
 
         private Guid UserId => Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ??
                                           throw new InvalidOperationException());
 
-        public CategoriesController(ICategoriesService categoriesService)
+        public TagsController(ITagService tagService)
         {
-            _categoriesService = categoriesService;
+            _tagService = tagService;
         }
 
         [HttpPost, Authorize(Roles = "admin")]
-        public async Task<ActionResult<Category>> Post([FromBody] CreateCategory request) =>
-            await _categoriesService.CreateCategoryAsync(request, UserId) switch
+        public async Task<ActionResult<Tag>> Post([FromBody] CreateTag request) =>
+            await _tagService.CreateAsync(request, UserId) switch
             {
                 (Result.Successful, var template) => StatusCode(201, template),
                 (Result.Conflict, null) => Conflict(),
-                _ => (ActionResult<Category>) StatusCode(500)
+                _ => (ActionResult<Tag>) StatusCode(500)
             };
         
-        [HttpPut("{catId}"), Authorize(Roles = "admin")]
-        public async Task<ActionResult<Category>> Post(Guid catId, [FromBody] UpdateCategory request) =>
-            await _categoriesService.UpdateCategoryAsync(catId, request, UserId) switch
+        [HttpPut("{tagId}"), Authorize(Roles = "admin")]
+        public async Task<ActionResult<Tag>> Post(Guid tagId, [FromBody] UpdateTag request) =>
+            await _tagService.UpdateAsync(tagId, request, UserId) switch
             {
                 (Result.Successful, var template) => StatusCode(201, template),
                 (Result.Conflict, null) => Conflict(),
                 (Result.NotFound, null) => NotFound(),
                 (Result.Gone, null) => StatusCode(410),
-                _ => (ActionResult<Category>) StatusCode(500)
+                _ => (ActionResult<Tag>) StatusCode(500)
             };
         
-        [HttpDelete("{catId}"), Authorize(Roles = "admin")]
-        public async Task<ActionResult> Delete(Guid catId, [FromBody] DeleteCategory request) =>
-            await _categoriesService.DeleteCategoryAsync(catId, request, UserId) switch
+        [HttpDelete("{tagId}"), Authorize(Roles = "admin")]
+        public async Task<ActionResult> Delete(Guid tagId, [FromBody] DeleteTag request) =>
+            await _tagService.DeleteAsync(tagId, request, UserId) switch
             {
                 Result.Successful => Ok(),
                 Result.Conflict => Conflict(),
@@ -56,7 +56,7 @@ namespace Upsaleslab.Templates.App.Controllers
             };
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> Get() =>
-            Ok(await _categoriesService.ListCategoriesAsync());
+        public async Task<ActionResult<IEnumerable<Tag>>> Get() =>
+            Ok(await _tagService.ListAsync());
     }
 }
