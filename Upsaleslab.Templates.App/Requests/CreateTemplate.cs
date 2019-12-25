@@ -26,6 +26,6 @@ namespace Upsaleslab.Templates.App.Requests
         public List<Slide> Slides { get; set; }
         
         [Required]
-        public Preview Preview { get; set; }
+        public Dictionary<string, Preview> Preview { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace Upsaleslab.Templates.App.Models
 
         public List<Slide> Slides { get; private set; }
 
-        public Preview Preview { get; private set; }
+        public Dictionary<string, Preview> Preview { get; private set; }
 
         public long Created { get; private set; }
 
@@ -58,10 +58,7 @@ namespace Upsaleslab.Templates.App.Models
                 UserId = userId,
                 Payload = new TemplateCreated
                 {
-                    Title = template.Title,
-                    AspectRatios = template.AspectRatios,
-                    Tags = template.Tags,
-                    Slides = template.Slides
+                    TemplateId = template.Id
                 }
             });
         }
@@ -86,10 +83,7 @@ namespace Upsaleslab.Templates.App.Models
                 UserId = userId,
                 Payload = new TemplateUpdated
                 {
-                    AspectRatios = AspectRatios,
-                    Tags = Tags,
-                    Slides = Slides,
-                    Title = Title
+                    TemplateId = Id
                 }
             };
         }

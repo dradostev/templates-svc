@@ -6,11 +6,11 @@ namespace Upsaleslab.Templates.App.Models
     {
         public Dictionary<string, string> Title { get; private set; }
 
-        public Preview Preview { get; private set; }
+        public Dictionary<string, Preview> Preview { get; private set; }
 
         public List<Field> Payload { get; private set; }
 
-        public Slide(Dictionary<string, string> title, Preview preview, List<Field> payload)
+        public Slide(Dictionary<string, string> title, Dictionary<string, Preview> preview, List<Field> payload)
         {
             Title = title;
             Preview = preview;

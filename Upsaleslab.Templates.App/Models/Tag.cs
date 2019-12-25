@@ -44,8 +44,7 @@ namespace Upsaleslab.Templates.App.Models
                 OccurredOn = tag.Created,
                 Payload = new TagCreated
                 {
-                    Name = tag.Name,
-                    Title = tag.Title
+                    TagId = tag.Id
                 }
             });
         }
@@ -66,8 +65,7 @@ namespace Upsaleslab.Templates.App.Models
                 OccurredOn = Updated,
                 Payload = new TagUpdated
                 {
-                    Name = Name,
-                    Title = Title
+                    TagId = Id
                 }
             };
         }
