@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using Localized = System.Collections.Generic.Dictionary<string, string>;
 using System.Text.Json.Serialization;
 using Upsaleslab.Templates.App.Events;
 using Upsaleslab.Templates.App.Requests;
@@ -10,9 +10,9 @@ namespace Upsaleslab.Templates.App.Models
     {
         public Guid Id { get; private set; }
         
-        public string Name { get; private set; }
+        public string Key { get; private set; }
         
-        public Dictionary<string, string> Title { get; private set; }
+        public Localized Title { get; private set; }
 
         public Guid CorrelationId { get; private set; }
         
@@ -28,7 +28,7 @@ namespace Upsaleslab.Templates.App.Models
             var tag = new Tag
             {
                 Id = Guid.NewGuid(),
-                Name = request.Name,
+                Key = request.Key,
                 Title = request.Title,
                 CorrelationId = request.CorrelationId,
                 Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
@@ -51,7 +51,7 @@ namespace Upsaleslab.Templates.App.Models
 
         public Event<TagUpdated> On(UpdateTag request, Guid userId)
         {
-            Name = request.Name;
+            Key = request.Name;
             Title = request.Title;
             CorrelationId = request.CorrelationId;
             Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

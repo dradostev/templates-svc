@@ -26,11 +26,11 @@ namespace Upsaleslab.Templates.App.Services
         
         public async Task<(Result, Tag)> CreateAsync(CreateTag request, Guid userId)
         {
-            _logger.LogInformation($"Trying to create tag {request.Name}");
+            _logger.LogInformation($"Trying to create tag {request.Key}");
             
             if (await _tags.CountDocumentsAsync(
                     x => x.CorrelationId == request.CorrelationId
-                         || x.Name == request.Name) > 0)
+                         || x.Key == request.Key) > 0)
             {
                 return (Result.Conflict, null);
             }
@@ -41,7 +41,7 @@ namespace Upsaleslab.Templates.App.Services
 
             await _eventService.PublishAsync(categoryCreated);
             
-            _logger.LogInformation($"Tag {request.Name} created");
+            _logger.LogInformation($"Tag {request.Key} created");
 
             return (Result.Successful, category);
         }
@@ -91,7 +91,7 @@ namespace Upsaleslab.Templates.App.Services
 
             await _eventService.PublishAsync(categoryDeleted);
             
-            _logger.LogInformation($"Tag {category.Name} deleted");
+            _logger.LogInformation($"Tag {category.Key} deleted");
 
             return Result.Successful;
         }

@@ -1,29 +1,29 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Upsaleslab.Templates.App.Events;
 using Upsaleslab.Templates.App.Requests;
+using Localized = System.Collections.Generic.Dictionary<string, string>;
 
 namespace Upsaleslab.Templates.App.Models
 {
     public class Template
     {
         public Guid Id { get; private set; }
-
-        [JsonIgnore]
+        
         public Guid CorrelationId { get; private set; }
 
-        public Dictionary<string, string> Title { get; private set; }
+        public string Key { get; private set; }
 
-        public Dictionary<string, string> Description { get; private set; }
+        public string Type { get; private set; }
+
+        public Localized Title { get; private set; }
+        
+        public Localized Description { get; private set; }
 
         public string[] Tags { get; private set; }
 
-        public string[] AspectRatios { get; private set; }
-
-        public List<Slide> Slides { get; private set; }
-
-        public Dictionary<string, Preview> Preview { get; private set; }
+        public Dictionary<string, AspectRatio> Ratios { get; private set; }
 
         public long Created { get; private set; }
 
@@ -31,19 +31,19 @@ namespace Upsaleslab.Templates.App.Models
 
         [JsonIgnore]
         public long Deleted { get; private set; }
-
+        
         public static (Template, Event<TemplateCreated>) On(CreateTemplate request, Guid userId)
         {
             var template = new Template
             {
                 Id = Guid.NewGuid(),
+                Key = request.Key,
+                Type = request.Type,
                 CorrelationId = request.CorrelationId,
                 Title = request.Title,
                 Description = request.Description,
                 Tags = request.Tags,
-                AspectRatios = request.AspectRatios,
-                Slides = request.Slides,
-                Preview = request.Preview,
+                Ratios = request.Ratios,
                 Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 Updated = 0,
                 Deleted = 0
@@ -62,16 +62,15 @@ namespace Upsaleslab.Templates.App.Models
                 }
             });
         }
-
+        
         public Event<TemplateUpdated> On(UpdateTemplate request, Guid userId)
         {
             CorrelationId = request.CorrelationId;
+            Key = request.Key;
             Title = request.Title;
             Description = request.Description;
             Tags = request.Tags;
-            AspectRatios = request.AspectRatios;
-            Slides = request.Slides;
-            Preview = request.Preview;
+            Ratios = request.Ratios;
             Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             
             return new Event<TemplateUpdated>
