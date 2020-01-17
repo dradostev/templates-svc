@@ -7,7 +7,7 @@ namespace Upsaleslab.Templates.App.Requests
     public class CreateTag
     {
         [Required]
-        public string Name { get; set; }
+        public string Key { get; set; }
 
         [Required]
         public Dictionary<string, string> Title { get; set; }

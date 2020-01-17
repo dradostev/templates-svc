@@ -46,7 +46,7 @@ namespace Upsaleslab.Templates.App
 
             services.AddLogging(c => c.AddConsole());
             
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers();
             
             var settings = MongoClientSettings.FromUrl(new MongoUrl(Configuration["MONGO_CONNECTION_STRING"]));
             settings.SslSettings = new SslSettings { EnabledSslProtocols = SslProtocols.Tls12 };

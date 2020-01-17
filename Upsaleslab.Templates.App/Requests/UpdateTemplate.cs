@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Upsaleslab.Templates.App.Models;
+using Localized = System.Collections.Generic.Dictionary<string, string>;
 
 namespace Upsaleslab.Templates.App.Requests
 {
@@ -10,22 +11,22 @@ namespace Upsaleslab.Templates.App.Requests
         [Required]
         public Guid CorrelationId { get; set; }
         
+        [Required, MinLength(2)]
+        public string Key { get; set; }
+
+        [Required, MinLength(2)]
+        public string Type { get; set; }
+
         [Required]
-        public Dictionary<string, string> Title { get; set; }
+        public Localized Title { get; set; }
         
         [Required]
-        public Dictionary<string, string> Description { get; set; }
-
+        public Localized Description { get; set; }
+        
         [Required]
         public string[] Tags { get; set; }
-
-        [Required]
-        public string[] AspectRatios { get; set; }
-
-        [Required]
-        public List<Slide> Slides { get; set; }
         
         [Required]
-        public Dictionary<string, Preview> Preview { get; set; }
+        public Dictionary<string, AspectRatio> Ratios { get; set; }
     }
 }

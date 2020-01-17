@@ -1,18 +1,19 @@
+#nullable enable
+using Constraints = System.Collections.Generic.Dictionary<string, string>;
+using Localized = System.Collections.Generic.Dictionary<string, string>;
+
 namespace Upsaleslab.Templates.App.Models
 {
     public class Field
     {
-        public string Type { get; private set; }
+        public string Key { get; set; }
 
-        public string Key { get; private set; }
+        public string Type { get; set; }
 
-        public string Value { get; private set; }
+        public string Value { get; set; }
 
-        public Field(string type, string key, string value)
-        {
-            Type = type;
-            Key = key;
-            Value = value;
-        }
+        public Constraints? Constraints { get; set; }
+        
+        public Localized? Title { get; set; }
     }
 }

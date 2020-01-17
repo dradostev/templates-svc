@@ -45,12 +45,12 @@ namespace Upsaleslab.Templates.App.Services
 
             foreach (var tagName in request.Tags)
             {
-                if (await _tags.CountDocumentsAsync(x => x.Name == tagName) == 0)
+                if (await _tags.CountDocumentsAsync(x => x.Key == tagName) == 0)
                 {
                     await _tagService.CreateAsync(new CreateTag
                     {
                         CorrelationId = request.CorrelationId,
-                        Name = tagName,
+                        Key = tagName,
                         Title = new Dictionary<string, string>{ {"en", tagName} }
                     }, userId);
                 }
@@ -83,12 +83,12 @@ namespace Upsaleslab.Templates.App.Services
             
             foreach (var tagName in request.Tags)
             {
-                if (await _tags.CountDocumentsAsync(x => x.Name == tagName) == 0)
+                if (await _tags.CountDocumentsAsync(x => x.Key == tagName) == 0)
                 {
                     await _tagService.CreateAsync(new CreateTag
                     {
                         CorrelationId = request.CorrelationId,
-                        Name = tagName,
+                        Key = tagName,
                         Title = new Dictionary<string, string>{ {"en", tagName} }
                     }, userId);
                 }
@@ -158,7 +158,7 @@ namespace Upsaleslab.Templates.App.Services
             {
                 foreach (var aspectRatio in request.AspectRatios)
                 {
-                    filter &= builder.Where(x => x.AspectRatios.Contains(aspectRatio));
+                    filter &= builder.Where(x => x.Ratios.Keys.Contains(aspectRatio));
                 }
             }
 
