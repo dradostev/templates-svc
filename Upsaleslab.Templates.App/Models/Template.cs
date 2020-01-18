@@ -117,7 +117,8 @@ namespace Upsaleslab.Templates.App.Models
                 Ratios = Ratios.Keys.ToArray(),
                 Preview = Ratios.Keys.ToDictionary(k => k, k=> Ratios[k].Project.Preview),
                 Title = Title,
-                Description = Description
+                Description = Description,
+                Tags = Tags
             };
         }
     }
