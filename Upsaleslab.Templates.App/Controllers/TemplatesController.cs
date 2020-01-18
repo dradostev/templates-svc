@@ -57,7 +57,7 @@ namespace Upsaleslab.Templates.App.Controllers
             };
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Template>>> Get([FromQuery] Paginate request) =>
+        public async Task<ActionResult<IEnumerable<Meta>>> Get([FromQuery] Paginate request) =>
             Ok(await _templateService.ListAsync(request));
 
         [HttpGet("{templateId}")]
