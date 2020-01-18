@@ -141,7 +141,7 @@ namespace Upsaleslab.Templates.App.Services
             return (Result.Successful, template);
         }
 
-        public async Task<IEnumerable<Template>> ListAsync(Paginate request)
+        public async Task<IEnumerable<Meta>> ListAsync(Paginate request)
         {
             var builder = Builders<Template>.Filter;
             var filter = builder.Eq("Deleted", 0);
@@ -162,11 +162,13 @@ namespace Upsaleslab.Templates.App.Services
                 }
             }
 
-            return await _templates
+            var tpl = await _templates
                 .Find(filter)
                 .Skip(request.Offset)
                 .Limit(request.Limit)
                 .ToListAsync();
+
+            return tpl.Select(t => t.ToMeta()).ToArray();
         }
     }
 }
