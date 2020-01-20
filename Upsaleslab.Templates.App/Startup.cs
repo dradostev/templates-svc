@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Upsaleslab.Templates.App.Events;
 using Upsaleslab.Templates.App.Services;
 
 namespace Upsaleslab.Templates.App
@@ -55,6 +56,7 @@ namespace Upsaleslab.Templates.App
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<ITagService, TagService>();
             services.AddScoped<ITemplateService, TemplateService>();
+            services.AddScoped<IEventListener, EventListener>();
 
             services.AddSwaggerGen(c => c.SwaggerDoc("api-docs", new OpenApiInfo{Title = "Templates", Version = "v1"}));
         }
