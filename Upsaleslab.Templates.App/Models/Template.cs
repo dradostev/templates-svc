@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Upsaleslab.Templates.App.Events;
 using Upsaleslab.Templates.App.Requests;
@@ -103,6 +104,21 @@ namespace Upsaleslab.Templates.App.Models
                 {
                     TemplateId = Id
                 }
+            };
+        }
+
+        public Meta ToMeta()
+        {
+            return new Meta
+            {
+                Id = Id,
+                Key = Key,
+                Type = Type,
+                Ratios = Ratios.Keys.ToArray(),
+                Preview = Ratios.Keys.ToDictionary(k => k, k=> Ratios[k].Project.Preview),
+                Title = Title,
+                Description = Description,
+                Tags = Tags
             };
         }
     }
