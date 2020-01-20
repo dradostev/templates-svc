@@ -39,7 +39,13 @@ namespace Upsaleslab.Templates.App.Services
                 UserId = e.UserId,
                 Payload = new ProjectFulfilled
                 {
-                    Project = ratio.Project
+                    ProjectId = e.Payload.ProjectId,
+                    TemplateId = e.Payload.TemplateId,
+                    Key = ratio.Project.Key,
+                    Order = ratio.Project.Order,
+                    Preview = ratio.Project.Preview,
+                    Resources = ratio.Project.Resources,
+                    Settings = ratio.Project.Settings
                 } 
             });
 
