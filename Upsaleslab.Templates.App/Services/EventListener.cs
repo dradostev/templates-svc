@@ -55,6 +55,7 @@ namespace Upsaleslab.Templates.App.Services
                     TemplateId = e.Payload.TemplateId,
                     Key = ratio.Project.Key,
                     Order = ratio.Project.Order,
+                    Type = template.Type,
                     Preview = ratio.Project.Preview,
                     Resources = ratio.Project.Resources,
                     Settings = ratio.Project.Settings

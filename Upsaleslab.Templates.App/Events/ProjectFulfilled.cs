@@ -14,6 +14,8 @@ namespace Upsaleslab.Templates.App.Events
 
         public int Order { get; set; }
 
+        public string Type { get; set; }
+
         public Preview Preview { get; set; }
         
         public List<Field> Resources { get; set; }
