@@ -58,7 +58,7 @@ spec:
        - name: RABBITMQ_EXCHANGE
          value: "events"
        - name: RABBITMQ_CONSUME_TOPICS
-         value: "svc.tools.events"
+         value: "svc.projects.events"
        - name: RABBITMQ_PUBLISH_TOPIC
          value: "svc.templates.events"
       envFrom:
