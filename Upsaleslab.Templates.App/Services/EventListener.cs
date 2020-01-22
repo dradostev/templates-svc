@@ -79,13 +79,6 @@ namespace Upsaleslab.Templates.App.Services
                 .FirstOrDefaultAsync();
 
             var aspectTemplate = template.Ratios[e.Payload.Ratio];
-            _logger.LogInformation($"Template with ratio: '{e.Payload.Ratio}' was found: '{aspectTemplate.Project.Title["en"]}'.");
-            _logger.LogInformation($"Looking for key '{e.Payload.Key}' in compositions: ");
-            foreach (var composition in aspectTemplate.Compositions)
-            {
-                _logger.LogInformation(composition.Key);
-            }
-            
             var aspectComposition = aspectTemplate.Compositions.FirstOrDefault(c => c.Key == e.Payload.Key);
             if (aspectComposition == null)
             {
