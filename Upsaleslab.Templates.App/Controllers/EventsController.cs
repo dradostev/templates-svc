@@ -24,5 +24,14 @@ namespace Upsaleslab.Templates.App.Controllers
                 Result.NotFound => NotFound(),
                 _ => (ActionResult) BadRequest()
             };
+
+        [HttpPost("project-composition-created:v1")]
+        public async Task<ActionResult> On([FromBody] Event<ProjectCompositionCreated> e) =>
+            await _eventListener.On(e) switch
+            {
+                Result.Successful => Accepted(),
+                Result.NotFound => NotFound(),
+                _ => (ActionResult) BadRequest()
+            };
     }
 }
