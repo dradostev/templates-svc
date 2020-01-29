@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Upsaleslab.Projects.App.Models;
 using Upsaleslab.Templates.App.Models;
@@ -26,6 +27,9 @@ namespace Upsaleslab.Templates.App.Controllers
         }
 
         [HttpPost, Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Template>> Post([FromBody] CreateTemplate request) =>
             await _templateService.CreateAsync(request, UserId) switch
             {
@@ -35,6 +39,11 @@ namespace Upsaleslab.Templates.App.Controllers
             };
         
         [HttpPut("{templateId}"), Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status410Gone)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Template>> Post(Guid templateId, [FromBody] UpdateTemplate request) =>
             await _templateService.UpdateAsync(templateId, request, UserId) switch
             {
@@ -46,6 +55,11 @@ namespace Upsaleslab.Templates.App.Controllers
             };
         
         [HttpDelete("{templateId}"), Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status410Gone)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Delete(Guid templateId, [FromBody] DeleteTemplate request) =>
             await _templateService.DeleteAsync(templateId, request, UserId) switch
             {
@@ -57,10 +71,15 @@ namespace Upsaleslab.Templates.App.Controllers
             };
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Meta>>> Get([FromQuery] Paginate request) =>
             Ok(await _templateService.ListAsync(request));
 
         [HttpGet("{templateId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status410Gone)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Template>> Get(Guid templateId) =>
             await _templateService.FindAsync(templateId) switch
             {
