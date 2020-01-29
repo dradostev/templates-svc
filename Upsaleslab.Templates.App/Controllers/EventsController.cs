@@ -7,6 +7,7 @@ using Upsaleslab.Templates.App.Services;
 namespace Upsaleslab.Templates.App.Controllers
 {
     [ApiController, Route("events")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class EventsController : Controller
     {
         private readonly IEventListener _eventListener;

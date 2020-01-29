@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Upsaleslab.Templates.App.Models;
 using Upsaleslab.Templates.App.Requests;
@@ -25,6 +26,9 @@ namespace Upsaleslab.Templates.App.Controllers
         }
 
         [HttpPost, Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Tag>> Post([FromBody] CreateTag request) =>
             await _tagService.CreateAsync(request, UserId) switch
             {
@@ -34,6 +38,11 @@ namespace Upsaleslab.Templates.App.Controllers
             };
         
         [HttpPut("{tagId}"), Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status410Gone)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Tag>> Post(Guid tagId, [FromBody] UpdateTag request) =>
             await _tagService.UpdateAsync(tagId, request, UserId) switch
             {
@@ -45,6 +54,11 @@ namespace Upsaleslab.Templates.App.Controllers
             };
         
         [HttpDelete("{tagId}"), Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status410Gone)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Delete(Guid tagId, [FromBody] DeleteTag request) =>
             await _tagService.DeleteAsync(tagId, request, UserId) switch
             {
@@ -56,6 +70,7 @@ namespace Upsaleslab.Templates.App.Controllers
             };
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Tag>>> Get() =>
             Ok(await _tagService.ListAsync());
     }
