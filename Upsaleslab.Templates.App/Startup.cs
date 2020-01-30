@@ -98,7 +98,7 @@ namespace Upsaleslab.Templates.App
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.UseSwagger(c => c.RouteTemplate = "/{documentName}/swagger.json");
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/api-docs/swagger.json", "Templates API V1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/v1/templates/api-docs/swagger.json", "Templates API V1"));
         }
     }
 }
