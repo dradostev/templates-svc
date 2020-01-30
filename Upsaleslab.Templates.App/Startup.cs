@@ -58,9 +58,35 @@ namespace Upsaleslab.Templates.App
             services.AddScoped<ITemplateService, TemplateService>();
             services.AddScoped<IEventListener, EventListener>();
 
-            services.AddSwaggerGen(c => c.SwaggerDoc("api-docs", new OpenApiInfo{Title = "Templates", Version = "v1"}));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("api-docs", new OpenApiInfo {Title = "Projects", Version = "v1"});
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Bearer token",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                        },
+                        new List<string>()
+                    }
+                });
+            });
         }
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -68,17 +94,13 @@ namespace Upsaleslab.Templates.App
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseAuthentication();
-
             app.UseHealthChecks("/health");
-
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            
-            app.UseSwagger(c => c.RouteTemplate = "{documentName}/swagger.json");
+            app.UseSwagger(c => c.RouteTemplate = "/{documentName}/swagger.json");
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/v1/templates/api-docs/swagger.json", "Templates API V1"));
         }
     }
 }
